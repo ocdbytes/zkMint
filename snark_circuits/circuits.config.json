@@ -1,0 +1,12 @@
+[
+  {
+    "name": "zkmint",
+    "protocol": "groth16",
+    "circuit": "zkmint/zkmint.circom",
+    "input": "zkmint/input.json",
+    "wasm": "zkmint/out/circuit.wasm",
+    "zkey": "zkmint/out/zkmint.zkey",
+    "vkey": "zkmint/out/zkmint.vkey",
+    "r1cs": "zkmint/out/zkmint.r1cs"
+  }
+]
