@@ -28,7 +28,7 @@ async function generateCallData(): Promise<ICallData> {
   const proof = unstringifyBigInts(zkProof.proof);
   const pub = unstringifyBigInts(zkProof.publicSignals);
 
-  console.log(">>>> pub : ", pub);
+  // console.log(">>>> pub : ", pub);
 
   let inputs: BigNumberish[] = [];
   for (let i = 0; i < pub.length; i++) {
@@ -36,14 +36,14 @@ async function generateCallData(): Promise<ICallData> {
   }
 
   let pi_a = [p256(proof.pi_a[0]), p256(proof.pi_a[1])];
-  console.log(pi_a);
+  // console.log(pi_a);
   let pi_b = [
     [p256(proof.pi_b[0][1]), p256(proof.pi_b[0][0])],
     [p256(proof.pi_b[1][1]), p256(proof.pi_b[1][0])],
   ];
-  console.log(pi_b);
+  // console.log(pi_b);
   let pi_c = [p256(proof.pi_c[0]), p256(proof.pi_c[1])];
-  console.log(pi_c);
+  // console.log(pi_c);
   let input = inputs;
   console.log(input);
 
@@ -87,6 +87,11 @@ async function main() {
 
   console.log(`Verifier deployed to ${verifier.address}`);
 
+  const zkMint = await ethers.getContractFactory(
+    "./contracts/zkMint.sol:zkMint"
+  );
+  const zkmint = await zkMint.deploy(verifier.address);
+  await zkmint.deployed();
   // generate proof call data
   const { pi_a, pi_b, pi_c, input } = await generateCallData();
 
@@ -96,6 +101,15 @@ async function main() {
 
   console.log(`Verifier result: ${tx}`);
   console.assert(tx == true, "Proof verification failed!");
+
+  const nullifier =
+    "9644105564195611480549718047467681678545755263698788280615376901065755873393";
+
+  console.log(nullifier);
+
+  const tx1 = await zkmint.mintWithProof(nullifier, pi_a, pi_b, pi_c);
+  console.log("Mint Result : ", tx1.hash);
+  console.assert(tx1.hash != null, "Mint failed");
 
   process.exit(0);
 }
